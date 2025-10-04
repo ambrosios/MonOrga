@@ -3,155 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kanban Sécurisé</title>
+    <title>🎯 Kanban Sécurisé</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Écran de connexion -->
+    <!-- 🔒 ÉCRAN DE CONNEXION -->
     <div id="loginScreen" class="screen active">
         <div class="login-container">
             <div class="login-header">
-                <h1>🔐 Kanban Sécurisé</h1>
-                <p>Entrez votre mot de passe maître</p>
+                <h1>🎯 Kanban Sécurisé</h1>
+                <p>Entrez votre mot de passe pour accéder à vos cartes</p>
             </div>
             
             <form id="loginForm" class="login-form">
                 <div class="form-group">
-                    <label for="masterPassword">Mot de passe maître</label>
+                    <label for="passwordInput">Mot de passe</label>
                     <div class="password-input-wrapper">
                         <input 
                             type="password" 
-                            id="masterPassword" 
+                            id="passwordInput" 
                             class="form-control"
                             placeholder="Minimum 8 caractères"
+                            autocomplete="off"
                             required
-                            minlength="8"
                         >
-                        <button type="button" id="toggleLoginPassword" class="btn-toggle-password">
+                        <button type="button" class="toggle-password" id="toggleLoginPassword">
                             👁️
                         </button>
                     </div>
+                    <small class="form-text">
+                        Premier lancement : créez votre mot de passe<br>
+                        Connexion : entrez votre mot de passe
+                    </small>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-block">
                     🔓 Déverrouiller
                 </button>
+                
+                <div id="loginError" class="error-message" style="display: none;"></div>
             </form>
-            
-            <div class="login-footer">
-                <p>⚠️ Le mot de passe ne peut pas être récupéré</p>
-            </div>
         </div>
     </div>
 
-    <!-- Écran principal Kanban -->
-    <div id="kanbanScreen" class="screen">
+    <!-- 📊 APPLICATION KANBAN -->
+    <div id="appScreen" class="screen">
         <header class="app-header">
             <div class="header-left">
-                <h1>📋 Mon Kanban</h1>
+                <h1>🎯 Mon Kanban</h1>
             </div>
             <div class="header-right">
-                <button id="exportBtn" class="btn btn-secondary">
-                    💾 Exporter
-                </button>
-                <button id="importBtn" class="btn btn-secondary">
-                    📥 Importer
-                </button>
-                <input type="file" id="importFile" accept=".enc" style="display: none;">
-                <button id="logoutBtn" class="btn btn-logout">
-                    🚪 Déconnexion
-                </button>
+                <button id="addCardBtn" class="btn btn-primary">➕ Nouvelle carte</button>
+                <button id="importExportBtn" class="btn btn-secondary">📥 Import/Export</button>
+                <button id="changePasswordBtn" class="btn btn-secondary">🔑 Changer mot de passe</button>
+                <button id="lockBtn" class="btn btn-danger">🔒 Verrouiller</button>
             </div>
         </header>
 
         <main class="kanban-board">
-            <!-- Colonne TODO -->
-            <div class="column" data-column="todo">
+            <!-- Colonne À faire -->
+            <div class="column" data-status="todo">
                 <div class="column-header">
                     <h2>📝 À faire</h2>
-                    <span class="column-count">0</span>
+                    <span class="card-count" id="todoCount">0</span>
                 </div>
-                <div class="column-content" id="todo-cards"></div>
-                <button class="btn-add-card" data-column="todo">
-                    ➕ Ajouter une carte
-                </button>
+                <div class="cards-container" id="todoCards"></div>
             </div>
 
-            <!-- Colonne EN COURS -->
-            <div class="column" data-column="inprogress">
+            <!-- Colonne En cours -->
+            <div class="column" data-status="doing">
                 <div class="column-header">
-                    <h2>🚀 En cours</h2>
-                    <span class="column-count">0</span>
+                    <h2>⚙️ En cours</h2>
+                    <span class="card-count" id="doingCount">0</span>
                 </div>
-                <div class="column-content" id="inprogress-cards"></div>
-                <button class="btn-add-card" data-column="inprogress">
-                    ➕ Ajouter une carte
-                </button>
+                <div class="cards-container" id="doingCards"></div>
             </div>
 
-            <!-- Colonne TERMINÉ -->
-            <div class="column" data-column="done">
+            <!-- Colonne Terminé -->
+            <div class="column" data-status="done">
                 <div class="column-header">
                     <h2>✅ Terminé</h2>
-                    <span class="column-count">0</span>
+                    <span class="card-count" id="doneCount">0</span>
                 </div>
-                <div class="column-content" id="done-cards"></div>
-                <button class="btn-add-card" data-column="done">
-                    ➕ Ajouter une carte
-                </button>
+                <div class="cards-container" id="doneCards"></div>
             </div>
         </main>
     </div>
 
-    <!-- Modal d'ajout/édition de carte -->
+    <!-- ➕ MODAL AJOUT/MODIFICATION CARTE -->
     <div id="cardModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2 id="modalTitle">➕ Nouvelle carte</h2>
-                <span class="close">&times;</span>
+                <h2 id="cardModalTitle">➕ Nouvelle carte</h2>
+                <button class="close" id="closeCardModal">&times;</button>
             </div>
             
             <form id="cardForm" class="modal-body">
-                <div class="form-group">
-                    <label for="cardTitle">Titre *</label>
-                    <input 
-                        type="text" 
-                        id="cardTitle" 
-                        class="form-control"
-                        placeholder="Ex: Refaire le design"
-                        required
-                    >
-                </div>
+                <input type="hidden" id="editCardId">
                 
+                <div class="form-row">
+                    <div class="form-group form-col-8">
+                        <label for="cardTitle">Titre *</label>
+                        <input 
+                            type="text" 
+                            id="cardTitle" 
+                            class="form-control"
+                            placeholder="Titre de la carte"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group form-col-4">
+                        <label for="cardStatus">Statut</label>
+                        <select id="cardStatus" class="form-control">
+                            <option value="todo">📝 À faire</option>
+                            <option value="doing">⚙️ En cours</option>
+                            <option value="done">✅ Terminé</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="cardDescription">Description</label>
                     <textarea 
                         id="cardDescription" 
                         class="form-control"
-                        rows="4"
-                        placeholder="Détails de la tâche..."
+                        placeholder="Description de la carte..."
+                        rows="6"
                     ></textarea>
                 </div>
-                
+
+                <div class="form-group">
+                    <label for="cardDueDate">Date d'échéance</label>
+                    <input 
+                        type="date" 
+                        id="cardDueDate" 
+                        class="form-control"
+                    >
+                </div>
+
                 <div class="modal-footer">
-                    <button type="button" id="cancelCard" class="btn btn-secondary">
-                        ❌ Annuler
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        💾 Enregistrer
-                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelCardBtn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Conteneur de notifications -->
-    <div id="notificationContainer"></div>
+    <!-- 🔍 MODAL DÉTAILS CARTE -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="detailsCardTitle"></h2>
+                <button class="close" id="closeDetailsModal">&times;</button>
+            </div>
+            
+            <div class="modal-body card-details-layout">
+                <div class="details-main">
+                    <div class="detail-section">
+                        <h3>📝 Description</h3>
+                        <p id="detailsCardDescription" class="description-text"></p>
+                    </div>
 
-    <!-- Scripts -->
-    <script src="js/security.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/ui.js"></script>
+                    <div class="detail-section">
+                        <h3>📅 Date d'échéance</h3>
+                        <p id="detailsCardDueDate"></p>
+                    </div>
+                </div>
+
+                <div class="details-sidebar">
+                    <div class="detail-section">
+                        <h3>ℹ️ Informations</h3>
+                        <ul class="info-list">
+                            <li><strong>📅 Créée le :</strong> <span id="detailsCreatedDate"></span></li>
+                            <li><strong>🔄 Modifiée le :</strong> <span id="detailsModifiedDate"></span></li>
+                            <li><strong>📍 Colonne :</strong> <span id="detailsColumn"></span></li>
+                            <li><strong>⏱️ Durée de vie :</strong> <span id="detailsLifetime"></span></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button id="editCardFromDetailsBtn" class="btn btn-primary btn-block">✏️ Modifier</button>
+                        <button id="deleteCardFromDetailsBtn" class="btn btn-danger btn-block">🗑️ Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📥 MODAL IMPORT/EXPORT -->
+    <div id="importExportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📥 Import / Export</h2>
+                <button class="close" id="closeImportExportModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="import-export-section">
+                    <h3>📤 Exporter les cartes</h3>
+                    <p>Téléchargez toutes vos cartes (fichier JSON chiffré)</p>
+                    <button id="exportCardsBtn" class="btn btn-primary btn-block">📥 Télécharger</button>
+                </div>
+
+                <hr>
+
+                <div class="import-export-section">
+                    <h3>📥 Importer des cartes</h3>
+                    <p>Sélectionnez un fichier JSON exporté précédemment</p>
+                    <input type="file" id="importFileInput" accept=".json" class="form-control">
+                    <button id="importCardsBtn" class="btn btn-secondary btn-block" disabled>📤 Importer</button>
+                    <small class="form-text">⚠️ Les cartes existantes seront remplacées</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔑 MODAL CHANGEMENT MOT DE PASSE -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔑 Changer le mot de passe</h2>
+                <button class="close" id="closeChangePasswordModal">&times;</button>
+            </div>
+            
+            <form id="changePasswordForm" class="modal-body">
+                <div class="form-group">
+                    <label for="currentPasswordInput">Mot de passe actuel *</label>
+                    <input 
+                        type="password" 
+                        id="currentPasswordInput" 
+                        class="form-control"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="newPasswordInput">Nouveau mot de passe *</label>
+                    <input 
+                        type="password" 
+                        id="newPasswordInput" 
+                        class="form-control"
+                        placeholder="Minimum 8 caractères"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPasswordInput">Confirmer le nouveau mot de passe *</label>
+                    <input 
+                        type="password" 
+                        id="confirmPasswordInput" 
+                        class="form-control"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
+                <div id="changePasswordError" class="error-message" style="display: none;"></div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelChangePasswordBtn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">🔄 Changer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
 </body>
 </html>
