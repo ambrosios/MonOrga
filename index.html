@@ -3,79 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trello Clone</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Kanban Sécurisé</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📋 Gestionnaire de Tâches</h1>
-        </header>
-
-        <div class="board">
-            <div class="column" data-column="todo">
-                <div class="column-header">
-                    <h2>À faire</h2>
-                    <span class="card-count">0</span>
-                </div>
-                <div class="cards-container" data-column-id="todo"></div>
-                <button class="add-card-btn" data-column="todo">
-                    + Ajouter une carte
-                </button>
+    <!-- Écran de connexion -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🔐 Kanban Sécurisé</h1>
+                <p>Entrez votre mot de passe maître</p>
             </div>
-
-            <div class="column" data-column="inprogress">
-                <div class="column-header">
-                    <h2>En cours</h2>
-                    <span class="card-count">0</span>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="masterPassword">Mot de passe maître</label>
+                    <div class="password-input-wrapper">
+                        <input 
+                            type="password" 
+                            id="masterPassword" 
+                            class="form-control"
+                            placeholder="Minimum 8 caractères"
+                            required
+                            minlength="8"
+                        >
+                        <button type="button" id="toggleLoginPassword" class="btn-toggle-password">
+                            👁️
+                        </button>
+                    </div>
                 </div>
-                <div class="cards-container" data-column-id="inprogress"></div>
-                <button class="add-card-btn" data-column="inprogress">
-                    + Ajouter une carte
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    🔓 Déverrouiller
                 </button>
-            </div>
-
-            <div class="column" data-column="done">
-                <div class="column-header">
-                    <h2>Terminé</h2>
-                    <span class="card-count">0</span>
-                </div>
-                <div class="cards-container" data-column-id="done"></div>
-                <button class="add-card-btn" data-column="done">
-                    + Ajouter une carte
-                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>⚠️ Le mot de passe ne peut pas être récupéré</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal pour éditer/créer une carte -->
+    <!-- Écran principal Kanban -->
+    <div id="kanbanScreen" class="screen">
+        <header class="app-header">
+            <div class="header-left">
+                <h1>📋 Mon Kanban</h1>
+            </div>
+            <div class="header-right">
+                <button id="exportBtn" class="btn btn-secondary">
+                    💾 Exporter
+                </button>
+                <button id="importBtn" class="btn btn-secondary">
+                    📥 Importer
+                </button>
+                <input type="file" id="importFile" accept=".enc" style="display: none;">
+                <button id="logoutBtn" class="btn btn-logout">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </header>
+
+        <main class="kanban-board">
+            <!-- Colonne TODO -->
+            <div class="column" data-column="todo">
+                <div class="column-header">
+                    <h2>📝 À faire</h2>
+                    <span class="column-count">0</span>
+                </div>
+                <div class="column-content" id="todo-cards"></div>
+                <button class="btn-add-card" data-column="todo">
+                    ➕ Ajouter une carte
+                </button>
+            </div>
+
+            <!-- Colonne EN COURS -->
+            <div class="column" data-column="inprogress">
+                <div class="column-header">
+                    <h2>🚀 En cours</h2>
+                    <span class="column-count">0</span>
+                </div>
+                <div class="column-content" id="inprogress-cards"></div>
+                <button class="btn-add-card" data-column="inprogress">
+                    ➕ Ajouter une carte
+                </button>
+            </div>
+
+            <!-- Colonne TERMINÉ -->
+            <div class="column" data-column="done">
+                <div class="column-header">
+                    <h2>✅ Terminé</h2>
+                    <span class="column-count">0</span>
+                </div>
+                <div class="column-content" id="done-cards"></div>
+                <button class="btn-add-card" data-column="done">
+                    ➕ Ajouter une carte
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal d'ajout/édition de carte -->
     <div id="cardModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Nouvelle carte</h2>
+                <h2 id="modalTitle">➕ Nouvelle carte</h2>
                 <span class="close">&times;</span>
             </div>
-            <form id="cardForm">
+            
+            <form id="cardForm" class="modal-body">
                 <div class="form-group">
                     <label for="cardTitle">Titre *</label>
-                    <input type="text" id="cardTitle" required placeholder="Titre de la tâche">
+                    <input 
+                        type="text" 
+                        id="cardTitle" 
+                        class="form-control"
+                        placeholder="Ex: Refaire le design"
+                        required
+                    >
                 </div>
+                
                 <div class="form-group">
                     <label for="cardDescription">Description</label>
-                    <textarea id="cardDescription" rows="4" placeholder="Description détaillée..."></textarea>
+                    <textarea 
+                        id="cardDescription" 
+                        class="form-control"
+                        rows="4"
+                        placeholder="Détails de la tâche..."
+                    ></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="cardDueDate">Date d'échéance</label>
-                    <input type="date" id="cardDueDate">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">Annuler</button>
+                
+                <div class="modal-footer">
+                    <button type="button" id="cancelCard" class="btn btn-secondary">
+                        ❌ Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Enregistrer
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Conteneur de notifications -->
+    <div id="notificationContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/security.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
