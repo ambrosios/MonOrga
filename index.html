@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Gestionnaire de Tâches</h1>
+        </header>
+
+        <div class="board">
+            <div class="column" data-column="todo">
+                <div class="column-header">
+                    <h2>À faire</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-column-id="todo"></div>
+                <button class="add-card-btn" data-column="todo">
+                    + Ajouter une carte
+                </button>
+            </div>
+
+            <div class="column" data-column="inprogress">
+                <div class="column-header">
+                    <h2>En cours</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-column-id="inprogress"></div>
+                <button class="add-card-btn" data-column="inprogress">
+                    + Ajouter une carte
+                </button>
+            </div>
+
+            <div class="column" data-column="done">
+                <div class="column-header">
+                    <h2>Terminé</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-column-id="done"></div>
+                <button class="add-card-btn" data-column="done">
+                    + Ajouter une carte
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour éditer/créer une carte -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nouvelle carte</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="cardForm">
+                <div class="form-group">
+                    <label for="cardTitle">Titre *</label>
+                    <input type="text" id="cardTitle" required placeholder="Titre de la tâche">
+                </div>
+                <div class="form-group">
+                    <label for="cardDescription">Description</label>
+                    <textarea id="cardDescription" rows="4" placeholder="Description détaillée..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cardDueDate">Date d'échéance</label>
+                    <input type="date" id="cardDueDate">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
