@@ -1,16 +1,23 @@
-# Trello Clone Sécurisé 🔐
+# Système Kanban Local Sécurisé (Trello like) 🔐
 
 Gestionnaire de tâches avec chiffrement AES-256-GCM local.
 
 ## Fonctionnalités
 
 ✅ **3 colonnes** : À faire, En cours, Terminé
+
 ✅ **Drag & Drop** : Déplacez les cartes entre colonnes
+
 ✅ **Cartes complètes** : Titre, description, date d'échéance
+
 ✅ **Chiffrement AES-256** : Vos données sont protégées
+
 ✅ **Sans serveur** : Tout fonctionne localement
+
 ✅ **Export/Import** : Sauvegardez vos données
+
 ✅ **Verrouillage** : Protégez votre session
+
 
 ## Installation
 
@@ -30,6 +37,8 @@ Gestionnaire de tâches avec chiffrement AES-256-GCM local.
 - HTML5 / CSS3 / JavaScript
 - Web Crypto API
 - localStorage
+
+*Créé avec partir Claude Sonnet 4.5, via Mammouth.ai*
 
 ## Licence
 
